@@ -15,9 +15,11 @@ namespace Infrastructure.Configuration
                 .IsRequired()
                 .HasColumnName("id");
 
-            builder.Property(q => q.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(q => q.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(q => q.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(q => q.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(q => q.QuestionNumber)
                 .HasColumnName("question_number")

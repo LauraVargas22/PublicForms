@@ -15,9 +15,11 @@ namespace Infrastructure.Configuration
                 .IsRequired()
                 .HasColumnName("id");
 
-            builder.Property(c => c.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(c => c.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(c => c.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(c => c.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(c => c.ComponentHtml)
                 .HasColumnName("componenthtml")

@@ -15,9 +15,11 @@ namespace Infrastructure.Configuration
                 .IsRequired()
                 .HasColumnName("id");
 
-            builder.Property(or => or.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(or => or.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(or => or.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(or => or.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(or => or.OptionText)
                 .HasColumnName("option_text");

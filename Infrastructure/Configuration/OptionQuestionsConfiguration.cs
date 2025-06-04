@@ -15,9 +15,9 @@ namespace Infrastructure.Configuration
                 .IsRequired()
                 .HasColumnName("id");
 
-            builder.Property(oq => oq.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(oq => oq.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(oq => oq.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(oq => oq.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(oq => oq.OptionId)
                 .IsRequired()

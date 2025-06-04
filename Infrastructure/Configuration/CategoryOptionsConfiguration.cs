@@ -15,9 +15,9 @@ namespace Infrastructure.Configuration
                 .IsRequired()
                 .HasColumnName("id");
 
-            builder.Property(co => co.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(co => co.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(co => co.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+            builder.Property(co => co.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(co => co.CatalogOptionsId)
                 .IsRequired()
