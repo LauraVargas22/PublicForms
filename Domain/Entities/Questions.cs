@@ -1,6 +1,6 @@
 namespace Domain.Entities
 {
-    public class Questions
+    public class Questions : BaseEntity
     {
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }

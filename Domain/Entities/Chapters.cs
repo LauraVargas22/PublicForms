@@ -1,6 +1,6 @@
 namespace Domain.Entities
 {
-    public class Chapters
+    public class Chapters : BaseEntity
     {
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }

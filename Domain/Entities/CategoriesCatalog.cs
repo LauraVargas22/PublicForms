@@ -1,6 +1,6 @@
 namespace Domain.Entities
 {
-    public class CategoriesCatalog
+    public class CategoriesCatalog : BaseEntity
     {
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }

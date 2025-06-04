@@ -1,12 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
     public class PublicDbContext : DbContext
     {
-        public PublicDbContext(DbContextOptions options) : base(options)
+        public PublicDbContext(DbContextOptions<PublicDbContext> options) : base(options)
         {
         }
         public DbSet<CategoriesCatalog> CategoriesCatalog { get; set; }
@@ -21,7 +25,6 @@ namespace Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

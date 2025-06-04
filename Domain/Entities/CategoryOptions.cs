@@ -1,6 +1,6 @@
 namespace Domain.Entities
 {
-    public class CategoryOptions
+    public class CategoryOptions : BaseEntity
     {
         public int Id { get; set; }
         public int CatalogOptionsId { get; set; }
