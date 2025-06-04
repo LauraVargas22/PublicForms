@@ -1,12 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configuration
 {
-    public class ChaptersConfiguration
+    public class ChaptersConfiguration : IEntityTypeConfiguration<Chapters>
     {
-        
+        public void Configure(EntityTypeBuilder<Chapters> builder)
+        {
+            builder.ToTable("chapters");
+            builder.HasKey(c => c.Id);
+            builder.Property(c => c.Id)
+                .ValueGeneratedOnAdd()
+                .IsRequired()
+                .HasColumnName("id");
+
+            builder.Property(c => c.CreatedAt).HasDefaultValue(DateTime.UtcNow);
+
+            builder.Property(c => c.UpdatedAt).HasDefaultValue(DateTime.UtcNow);
+
+            builder.Property(c => c.ComponentHtml)
+                .HasColumnName("componenthtml")
+                .HasMaxLength(20);
+
+            builder.Property(c => c.ComponentReact)
+                .HasColumnName("componentreact")
+                .HasMaxLength(20);
+
+            builder.Property(c => c.ChapterNumber)
+                .HasColumnName("chapter_number")
+                .HasMaxLength(50)
+                .IsRequired();
+
+            builder.Property(c => c.ChapterTitle)
+                .HasColumnName("chapter_title")
+                .IsRequired();
+
+            builder.HasMany(c => c.Questions)
+               .WithOne(q => q.Chapters)
+               .HasForeignKey(q => q.ChapterId);
+        }
     }
 }
