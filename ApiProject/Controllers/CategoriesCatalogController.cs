@@ -36,7 +36,7 @@ public class CategoriesCatalogController : BaseApiController
         return Ok(categoriesCatalog);
     }
 
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CategoriesCatalog>> Post(CategoriesCatalog categoriesCatalog)
