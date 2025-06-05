@@ -1,6 +1,6 @@
 namespace Domain.Entities
 {
-    public class OptionsResponse
+    public class OptionsResponse : BaseEntity
     {
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
