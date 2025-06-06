@@ -49,33 +49,48 @@ public class QuestionsController : BaseApiController
         }
         return CreatedAtAction(nameof(Post), new { id = questions.Id }, questions);
     }
-    
+
     [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put(int id, [FromBody] Chapters chapters)
-        {
-            // Validación: objeto nulo
-            if (chapters == null)
-                return BadRequest("El cuerpo de la solicitud está vacío.");
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Put(int id, [FromBody] Chapters chapters)
+    {
+        // Validación: objeto nulo
+        if (chapters == null)
+            return BadRequest("El cuerpo de la solicitud está vacío.");
 
-            // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
-            if (id != chapters.Id)
-                return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
+        // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
+        if (id != chapters.Id)
+            return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
 
-            // Verificación: el recurso debe existir antes de actualizar
-            var existingChapters = await _unitOfWork.Chapters.GetByIdAsync(id);
-            if (existingChapters == null)
-                return NotFound($"No se encontró el capítulo con ID {id}.");
+        // Verificación: el recurso debe existir antes de actualizar
+        var existingChapters = await _unitOfWork.Chapters.GetByIdAsync(id);
+        if (existingChapters == null)
+            return NotFound($"No se encontró el capítulo con ID {id}.");
 
-            // Actualización controlada de campos específicos
-            existingChapters.ChapterTitle = chapters.ChapterTitle;
-            // Puedes agregar más propiedades aquí según el modelo
+        // Actualización controlada de campos específicos
+        existingChapters.ChapterTitle = chapters.ChapterTitle;
+        // Puedes agregar más propiedades aquí según el modelo
 
-            _unitOfWork.Chapters.Update(existingChapters);
-            await _unitOfWork.SaveAsync();
+        _unitOfWork.Chapters.Update(existingChapters);
+        await _unitOfWork.SaveAsync();
 
-            return Ok(existingChapters);
-        }
+        return Ok(existingChapters);
+    }
+    
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var questions = await _unitOfWork.Questions.GetByIdAsync(id);
+        if (questions == null)
+            return NotFound();
+
+    _unitOfWork.Questions.Remove(questions);
+    await _unitOfWork.SaveAsync();
+
+    return NoContent();
+    }
 }
