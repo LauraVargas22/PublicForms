@@ -1,0 +1,81 @@
+using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using ApiProject.Controllers;
+
+namespace ApiProject.Controllers;
+
+public class QuestionsController : BaseApiController
+{
+    private readonly IUnitOfWork _unitOfWork;
+    public QuestionsController(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<Chapters>>> Get()
+    {
+        var questions = await _unitOfWork.Questions.GetAllAsync();
+        return Ok(questions);
+    }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Get(int id)
+    {
+        var questions = await _unitOfWork.Questions.GetByIdAsync(id);
+        if (questions == null)
+        {
+            return NotFound($"Questions with id {id} was not found.");
+        }
+        return Ok(questions);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Questions>> Post(Questions questions)
+    {
+        _unitOfWork.Questions.Add(questions);
+        await _unitOfWork.SaveAsync();
+        if (questions == null)
+        {
+            return BadRequest();
+        }
+        return CreatedAtAction(nameof(Post), new { id = questions.Id }, questions);
+    }
+    
+    [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Put(int id, [FromBody] Chapters chapters)
+        {
+            // Validación: objeto nulo
+            if (chapters == null)
+                return BadRequest("El cuerpo de la solicitud está vacío.");
+
+            // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
+            if (id != chapters.Id)
+                return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
+
+            // Verificación: el recurso debe existir antes de actualizar
+            var existingChapters = await _unitOfWork.Chapters.GetByIdAsync(id);
+            if (existingChapters == null)
+                return NotFound($"No se encontró el capítulo con ID {id}.");
+
+            // Actualización controlada de campos específicos
+            existingChapters.ChapterTitle = chapters.ChapterTitle;
+            // Puedes agregar más propiedades aquí según el modelo
+
+            _unitOfWork.Chapters.Update(existingChapters);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(existingChapters);
+        }
+}
