@@ -130,3 +130,6 @@ C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\APIProject\obj\
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\APIProject\obj\Debug\net9.0\ApiProject.pdb
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\APIProject\obj\Debug\net9.0\ApiProject.genruntimeconfig.cache
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\APIProject\obj\Debug\net9.0\ref\ApiProject.dll
+C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
