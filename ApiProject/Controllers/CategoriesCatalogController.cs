@@ -3,15 +3,26 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ApiProject.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiProject.Controllers;
 
+[Authorize(Roles = "Admin")]
+[ApiController]
+[Route("api/[controller]")]
 public class CategoriesCatalogController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     public CategoriesCatalogController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+    }
+
+    [Authorize]
+    [HttpGet("datos-protegidos")]
+    public IActionResult GetDatos()
+    {
+        return Ok("Acceso permitido con token válido.");
     }
 
     [HttpGet]
@@ -85,13 +96,13 @@ public class CategoriesCatalogController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-    var categoriesCatalog = await _unitOfWork.CategoriesCatalog.GetByIdAsync(id);
-    if (categoriesCatalog == null)
-        return NotFound();
+        var categoriesCatalog = await _unitOfWork.CategoriesCatalog.GetByIdAsync(id);
+        if (categoriesCatalog == null)
+            return NotFound();
 
-    _unitOfWork.CategoriesCatalog.Remove(categoriesCatalog);
-    await _unitOfWork.SaveAsync();
+        _unitOfWork.CategoriesCatalog.Remove(categoriesCatalog);
+        await _unitOfWork.SaveAsync();
 
-    return NoContent();
+        return NoContent();
     }
 }
