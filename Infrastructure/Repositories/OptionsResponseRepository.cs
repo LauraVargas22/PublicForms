@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -11,5 +12,11 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public override async Task<OptionsResponse> GetByIdAsync(int id)
+        {
+            return await _context.OptionsResponse
+                .FirstOrDefaultAsync(c => c.Id == id) ?? throw new KeyNotFoundException($"Options Response with id {id} was not found");
+        } 
     }
 }

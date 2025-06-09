@@ -3,44 +3,49 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ApiProject.Controllers;
+using Application.DTOs;
+using AutoMapper;
 
 namespace ApiProject.Controllers;
 
 public class QuestionsController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
-    public QuestionsController(IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+    public QuestionsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<Chapters>>> Get()
+    public async Task<ActionResult<IEnumerable<QuestionsDto>>> Get()
     {
         var questions = await _unitOfWork.Questions.GetAllAsync();
-        return Ok(questions);
+        return _mapper.Map<List<QuestionsDto>>(questions);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<ActionResult<QuestionsDto>> Get(int id)
     {
         var questions = await _unitOfWork.Questions.GetByIdAsync(id);
         if (questions == null)
         {
             return NotFound($"Questions with id {id} was not found.");
         }
-        return Ok(questions);
+        return Ok(_mapper.Map<QuestionsDto>(questions));
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Questions>> Post(Questions questions)
+    public async Task<ActionResult<Questions>> Post(QuestionsDto questionsDto)
     {
+        var questions = _mapper.Map<Questions>(questionsDto);
         _unitOfWork.Questions.Add(questions);
         await _unitOfWork.SaveAsync();
         if (questions == null)
@@ -54,31 +59,18 @@ public class QuestionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put(int id, [FromBody] Chapters chapters)
+    public async Task<IActionResult> Put(int id, [FromBody] QuestionsDto questionsDto)
     {
         // Validación: objeto nulo
-        if (chapters == null)
-            return BadRequest("El cuerpo de la solicitud está vacío.");
+        if (questionsDto == null)
+            return NotFound();
 
-        // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
-        if (id != chapters.Id)
-            return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
-
-        // Verificación: el recurso debe existir antes de actualizar
-        var existingChapters = await _unitOfWork.Chapters.GetByIdAsync(id);
-        if (existingChapters == null)
-            return NotFound($"No se encontró el capítulo con ID {id}.");
-
-        // Actualización controlada de campos específicos
-        existingChapters.ChapterTitle = chapters.ChapterTitle;
-        // Puedes agregar más propiedades aquí según el modelo
-
-        _unitOfWork.Chapters.Update(existingChapters);
+        var questions = _mapper.Map<Questions>(questionsDto);
+        _unitOfWork.Questions.Update(questions);
         await _unitOfWork.SaveAsync();
-
-        return Ok(existingChapters);
+        return Ok(questionsDto);
     }
-    
+
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -88,9 +80,9 @@ public class QuestionsController : BaseApiController
         if (questions == null)
             return NotFound();
 
-    _unitOfWork.Questions.Remove(questions);
-    await _unitOfWork.SaveAsync();
+        _unitOfWork.Questions.Remove(questions);
+        await _unitOfWork.SaveAsync();
 
-    return NoContent();
+        return NoContent();
     }
 }

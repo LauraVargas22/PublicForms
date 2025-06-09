@@ -3,80 +3,72 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ApiProject.Controllers;
+using Application.DTOs;
+using AutoMapper;
 
 namespace ApiProject.Controllers
 {
     public class ChaptersController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ChaptersController(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public ChaptersController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Chapters>>> Get()
+        public async Task<ActionResult<IEnumerable<ChaptersDto>>> Get()
         {
             var chapters = await _unitOfWork.Chapters.GetAllAsync();
-            return Ok(chapters);
+            return _mapper.Map<List<ChaptersDto>>(chapters);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<ActionResult<ChaptersDto>> Get(int id)
         {
             var chapters = await _unitOfWork.Chapters.GetByIdAsync(id);
             if (chapters == null)
             {
                 return NotFound($"Chapters with id {id} was not found.");
             }
-            return Ok(chapters);
+            return Ok(_mapper.Map<ChaptersDto>(chapters));
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Chapters>> Post(Chapters chapters)
+        public async Task<ActionResult<Chapters>> Post(ChaptersDto chaptersDto)
         {
+            var chapters = _mapper.Map<Chapters>(chaptersDto);
             _unitOfWork.Chapters.Add(chapters);
             await _unitOfWork.SaveAsync();
             if (chapters == null)
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(Post), new { id = chapters.Id }, chapters);
+            return CreatedAtAction(nameof(Post), new { id = chaptersDto.Id }, chapters);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put(int id, [FromBody] Chapters chapters)
+        public async Task<IActionResult> Put(int id, [FromBody] ChaptersDto chaptersDto)
         {
             // Validación: objeto nulo
-            if (chapters == null)
-                return BadRequest("El cuerpo de la solicitud está vacío.");
+            if (chaptersDto == null)
+                return NotFound();
 
-            // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
-            if (id != chapters.Id)
-                return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
-
-            // Verificación: el recurso debe existir antes de actualizar
-            var existingChapters = await _unitOfWork.Chapters.GetByIdAsync(id);
-            if (existingChapters == null)
-                return NotFound($"No se encontró el capítulo con ID {id}.");
-
-            // Actualización controlada de campos específicos
-            existingChapters.ChapterTitle = chapters.ChapterTitle;
-            // Puedes agregar más propiedades aquí según el modelo
-
-            _unitOfWork.Chapters.Update(existingChapters);
+            var chapters = _mapper.Map<Chapters>(chaptersDto);
+            _unitOfWork.Chapters.Update(chapters);
             await _unitOfWork.SaveAsync();
-
-            return Ok(existingChapters);
+            return Ok(chaptersDto);
         }
 
         [HttpDelete("{id}")]

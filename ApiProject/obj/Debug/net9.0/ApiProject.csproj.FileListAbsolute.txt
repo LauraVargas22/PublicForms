@@ -141,3 +141,4 @@ C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\USUARIO\Documents\CAMPUSLANDS\EntityFramework\projectEF\ApiProject\bin\Debug\net9.0\AutoMapper.dll

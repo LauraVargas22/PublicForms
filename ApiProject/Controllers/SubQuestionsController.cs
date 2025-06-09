@@ -3,80 +3,72 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ApiProject.Controllers;
+using Application.DTOs;
+using AutoMapper;
 
 namespace ApiProject.Controllers
 {
     public class SubQuestionsController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        public SubQuestionsController(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public SubQuestionsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<SubQuestions>>> Get()
+        public async Task<ActionResult<IEnumerable<SubQuestionsDto>>> Get()
         {
             var subQuestions = await _unitOfWork.SubQuestions.GetAllAsync();
-            return Ok(subQuestions);
+            return  _mapper.Map<List<SubQuestionsDto>>(subQuestions);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<ActionResult<SubQuestionsDto>> Get(int id)
         {
             var subQuestion = await _unitOfWork.SubQuestions.GetByIdAsync(id);
             if (subQuestion == null)
             {
                 return NotFound($"Sub Question with id {id} was not found.");
             }
-            return Ok(subQuestion);
+            return Ok(_mapper.Map<SubQuestionsDto>(subQuestion));
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<SubQuestions>> Post(SubQuestions subQuestion)
+        public async Task<ActionResult<SubQuestions>> Post(SubQuestionsDto subQuestionDto)
         {
+            var subQuestion = _mapper.Map<SubQuestions>(subQuestionDto);
             _unitOfWork.SubQuestions.Add(subQuestion);
             await _unitOfWork.SaveAsync();
             if (subQuestion == null)
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(Post), new { id = subQuestion.Id }, subQuestion);
+            return CreatedAtAction(nameof(Post), new { id = subQuestionDto.Id }, subQuestion);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put(int id, [FromBody] SubQuestions subQuestion)
+        public async Task<IActionResult> Put(int id, [FromBody] SubQuestionsDto subQuestionDto)
         {
             // Validación: objeto nulo
-            if (subQuestion == null)
-                return BadRequest("El cuerpo de la solicitud está vacío.");
+            if (subQuestionDto == null)
+                return NotFound();
 
-            // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
-            if (id != subQuestion.Id)
-                return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
-
-            // Verificación: el recurso debe existir antes de actualizar
-            var existingSubQuestion = await _unitOfWork.SubQuestions.GetByIdAsync(id);
-            if (existingSubQuestion == null)
-                return NotFound($"No se encontró la subpregunta con ID {id}.");
-
-            // Actualización controlada de campos específicos
-            existingSubQuestion.CommentSubQuestion = subQuestion.CommentSubQuestion;
-            // Puedes agregar más propiedades aquí según el modelo
-
-            _unitOfWork.SubQuestions.Update(existingSubQuestion);
+            var subQuestion = _mapper.Map<SubQuestions>(subQuestionDto);
+            _unitOfWork.SubQuestions.Update(subQuestion);
             await _unitOfWork.SaveAsync();
-
-            return Ok(existingSubQuestion);
+            return Ok(subQuestionDto);
         }
 
         [HttpDelete("{id}")]

@@ -14,5 +14,11 @@ public class ChaptersRepository : GenericRepository<Chapters>, IChaptersReposito
     {
         _context = context;
 
-    }  
+    } 
+
+    public override async Task<Chapters> GetByIdAsync(int id)
+    {
+        return await _context.Chapters
+            .FirstOrDefaultAsync(c => c.Id == id) ?? throw new KeyNotFoundException($"Chapters with id {id} was not found");
+    } 
 }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ApiProject.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Application.DTOs;
+using AutoMapper;
 
 namespace ApiProject.Controllers;
 
@@ -13,9 +15,12 @@ namespace ApiProject.Controllers;
 public class CategoriesCatalogController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
-    public CategoriesCatalogController(IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+
+    public CategoriesCatalogController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [Authorize]
@@ -28,66 +33,54 @@ public class CategoriesCatalogController : BaseApiController
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<CategoriesCatalog>>> Get()
+    public async Task<ActionResult<IEnumerable<CategoriesCatalogDto>>> Get()
     {
         var categoriesCatalog = await _unitOfWork.CategoriesCatalog.GetAllAsync();
-        return Ok(categoriesCatalog);
+        return _mapper.Map<List<CategoriesCatalogDto>>(categoriesCatalog);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<ActionResult<CategoriesCatalogDto>> Get(int id)
     {
         var categoriesCatalog = await _unitOfWork.CategoriesCatalog.GetByIdAsync(id);
         if (categoriesCatalog == null)
         {
             return NotFound($"Categories Catalog with id {id} was not found.");
         }
-        return Ok(categoriesCatalog);
+        return _mapper.Map<CategoriesCatalogDto>(categoriesCatalog);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<CategoriesCatalog>> Post(CategoriesCatalog categoriesCatalog)
+    public async Task<ActionResult<CategoriesCatalog>> Post(CategoriesCatalogDto categoriesCatalogDto)
     {
+        var categoriesCatalog = _mapper.Map<CategoriesCatalog>(categoriesCatalogDto);
         _unitOfWork.CategoriesCatalog.Add(categoriesCatalog);
         await _unitOfWork.SaveAsync();
-        if (categoriesCatalog == null)
+        if (categoriesCatalogDto == null)
         {
             return BadRequest();
         }
-        return CreatedAtAction(nameof(Post), new { id = categoriesCatalog.Id }, categoriesCatalog);
+        return CreatedAtAction(nameof(Post), new { id = categoriesCatalogDto.Id }, categoriesCatalog);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put(int id, [FromBody] CategoriesCatalog categoriesCatalog)
+    public async Task<IActionResult> Put(int id, [FromBody] CategoriesCatalogDto categoriesCatalogDto)
     {
         // Validación: objeto nulo
-        if (categoriesCatalog == null)
-            return BadRequest("El cuerpo de la solicitud está vacío.");
+        if (categoriesCatalogDto == null)
+            return NotFound();
 
-        // Validación: el ID de la URL debe coincidir con el del objeto (si viene con ID)
-        if (id != categoriesCatalog.Id)
-            return BadRequest("El ID de la URL no coincide con el ID del objeto enviado.");
-
-        // Verificación: el recurso debe existir antes de actualizar
-        var existingCategoryCatalog = await _unitOfWork.CategoriesCatalog.GetByIdAsync(id);
-        if (existingCategoryCatalog == null)
-            return NotFound($"No se encontró la categoría con ID {id}.");
-
-        // Actualización controlada de campos específicos
-        existingCategoryCatalog.Name = categoriesCatalog.Name;
-        // Puedes agregar más propiedades aquí según el modelo
-
-        _unitOfWork.CategoriesCatalog.Update(existingCategoryCatalog);
+        var categoriesCatalog = _mapper.Map<CategoriesCatalog>(categoriesCatalogDto);
+        _unitOfWork.CategoriesCatalog.Update(categoriesCatalog);
         await _unitOfWork.SaveAsync();
-
-        return Ok(existingCategoryCatalog);
+        return Ok(categoriesCatalogDto);
     }
 
     //DELETE: api/CategoriesCatalog
