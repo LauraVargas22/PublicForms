@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
 
 builder.Services.ConfigureCors();
-builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
+builder.Services.AddCustomRateLimiter();
 
+builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
@@ -65,5 +66,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
+
+app.MapControllers();
 
 app.Run();

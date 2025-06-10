@@ -16,6 +16,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private ISubQuestionsRepository? _subQuestions;
     private ISumaryOptionsRepository? _sumaryOptions;
     private ISurveysRepository? _surveys;
+    private IMemberRepository? _member;
+    private IRolRepository? _rol;
 
     public UnitOfWork(PublicDbContext context)
     {
@@ -127,6 +129,29 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _surveys = new SurveysRepository(_context);
             }
             return _surveys;
+        }
+    }
+
+    public IMemberRepository Member
+    {
+        get
+        {
+            if (_member == null)
+            {
+                _member = new MemberRepository(_context);
+            }
+            return _member;
+        }
+    }
+    public IRolRepository Rol
+    {
+        get
+        {
+            if (_rol == null)
+            {
+                _rol = new RolRepository(_context);
+            }
+            return _rol;
         }
     }
 
