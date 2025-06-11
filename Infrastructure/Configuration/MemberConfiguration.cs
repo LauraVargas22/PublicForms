@@ -11,14 +11,22 @@ namespace Infrastructure.Configuration
             // Aquí puedes configurar las propiedades de la entidad Marca
             // utilizando el objeto 'builder'.
             builder.ToTable("members");
-            builder.HasKey(m => m.Id); // Asumiendo que 'Id' es la clave primaria
+            builder.HasKey(e => e.Id);
 
-            builder.Property(m => m.Username)
+            builder.Property(p => p.Id)
+                    .IsRequired();
+
+            builder.Property(p => p.Username)
                     .IsRequired()
                     .HasMaxLength(200);
-            builder.Property(m => m.Email)
+            builder.Property(p => p.Email)
                     .IsRequired()
                     .HasMaxLength(200);
+
+            builder.HasMany(p => p.RefreshTokens)
+                    .WithOne(p => p.Members)
+                    .HasForeignKey(p => p.MemberId)
+                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

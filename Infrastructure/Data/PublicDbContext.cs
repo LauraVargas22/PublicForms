@@ -25,6 +25,7 @@ namespace Infrastructure.Data
         public DbSet<Member> Members { get; set; }
         public DbSet<Rol> Rols { get; set; }
         public DbSet<MemberRols> MemberRols { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

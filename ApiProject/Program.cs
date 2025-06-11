@@ -45,8 +45,7 @@ builder.Services.AddDbContext<PublicDbContext>(options =>
 });
 
 var app = builder.Build();
-app.MapControllers();
-
+//app.MapControllers();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -67,7 +66,8 @@ app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
-
+app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 
 app.Run();

@@ -3,7 +3,7 @@ using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 
-
+namespace Infrastructure.UnitOfWork;
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly PublicDbContext _context;
@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private ISurveysRepository? _surveys;
     private IMemberRepository? _member;
     private IRolRepository? _rol;
+    private IMemberRolsRepository? _memberRols;
 
     public UnitOfWork(PublicDbContext context)
     {
@@ -132,7 +133,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
     }
 
-    public IMemberRepository Member
+    public IMemberRepository Members
     {
         get
         {
@@ -143,7 +144,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             return _member;
         }
     }
-    public IRolRepository Rol
+    public IRolRepository Rols
     {
         get
         {
@@ -152,6 +153,18 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _rol = new RolRepository(_context);
             }
             return _rol;
+        }
+    }
+
+    public IMemberRolsRepository MemberRols
+    {
+        get
+        {
+            if (_memberRols == null)
+            {
+                _memberRols = new MemberRolsRepository(_context);
+            }
+            return _memberRols;
         }
     }
 

@@ -11,5 +11,11 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public void Attach(Rol rol)
+        {
+            if (rol == null) throw new ArgumentNullException(nameof(rol));
+            _context.Rols.Attach(rol);
+        }
     }
 }

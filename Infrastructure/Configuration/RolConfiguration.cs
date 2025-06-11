@@ -17,6 +17,8 @@ namespace Infrastructure.Configuration
             builder.Property(p => p.Name)
                     .IsRequired()
                     .HasMaxLength(80);
+            // builder.Property(p => p.Description)
+            //         .HasMaxLength(100);
         }
     }
 }

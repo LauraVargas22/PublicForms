@@ -14,5 +14,6 @@ namespace Domain.Entities
         public string? Email { get; set; }
         public string? Password { get; set; }
         public ICollection<MemberRols> MemberRols { get; set; } = new HashSet<MemberRols>(); 
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
     }
 }
