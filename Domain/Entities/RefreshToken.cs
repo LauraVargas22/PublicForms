@@ -8,8 +8,8 @@ namespace Domain.Entities
     public class RefreshToken
     {
         public int Id { get; set; }
-        public int MemberId { get; set; }
-        public Member? Members { get; set; }
+        public int UserMemberId { get; set; }
+        public UserMember? UserMembers { get; set; }
         public string? Token { get; set; }
         public DateTime Expires { get; set; }
         public bool IsExpired => DateTime.UtcNow >= Expires;

@@ -20,10 +20,10 @@ namespace ApiProject.Services
     {
         private readonly JWT _jwt;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IPasswordHasher<Member> _passwordHasher;
+        private readonly IPasswordHasher<UserMember> _passwordHasher;
 
         public UserService(IUnitOfWork unitOfWork, IOptions<JWT> jwt,
-        IPasswordHasher<Member> passwordHasher)
+        IPasswordHasher<UserMember> passwordHasher)
         {
             _jwt = jwt.Value;
             _unitOfWork = unitOfWork;
@@ -32,9 +32,8 @@ namespace ApiProject.Services
 
         public async Task<string> RegisterAsync(RegisterDto registerDto)
         {
-            var usuario = new Member
+            var usuario = new UserMember
             {
-                Id = registerDto.Id,
                 Name = registerDto.Name,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
@@ -43,7 +42,7 @@ namespace ApiProject.Services
 
             usuario.Password = _passwordHasher.HashPassword(usuario, registerDto.Password);
 
-            var usuarioExiste = _unitOfWork.Members
+            var usuarioExiste = _unitOfWork.UserMembers
                                         .Find(u => u.Username.ToLower() == registerDto.Username.ToLower())
                                         .FirstOrDefault();
 
@@ -60,10 +59,10 @@ namespace ApiProject.Services
                     //usuario.Rols.Add(rolAsociar);
                     var relacion = new MemberRols
                     {
-                        MemberId = usuario.Id,
+                        UserMemberId = usuario.Id,
                         RolId = rolPredeterminado.Id
                     };
-                    _unitOfWork.Members.Add(usuario);
+                    _unitOfWork.UserMembers.Add(usuario);
                     _unitOfWork.MemberRols.Add(relacion);
                     await _unitOfWork.SaveAsync();
 
@@ -84,7 +83,7 @@ namespace ApiProject.Services
         public async Task<DataUserDto> GetTokenAsync(LoginDto model)
         {
             DataUserDto dataUserDto = new DataUserDto();
-            var usuario = await _unitOfWork.Members
+            var usuario = await _unitOfWork.UserMembers
                         .GetByUsernameAsync(model.Username);
 
             if (usuario == null)
@@ -118,7 +117,7 @@ namespace ApiProject.Services
                     dataUserDto.RefreshToken = refreshToken.Token;
                     dataUserDto.RefreshTokenExpiration = refreshToken.Expires;
                     usuario.RefreshTokens.Add(refreshToken);
-                    _unitOfWork.Members.Update(usuario);
+                    _unitOfWork.UserMembers.Update(usuario);
                     await _unitOfWork.SaveAsync();
                 }
 
@@ -131,7 +130,7 @@ namespace ApiProject.Services
 
         public async Task<string> AddRoleAsync(AddRoleDto model)
         {
-            var usuario = await _unitOfWork.Members
+            var usuario = await _unitOfWork.UserMembers
                         .GetByUsernameAsync(model.Username);
 
             if (usuario == null)
@@ -159,7 +158,7 @@ namespace ApiProject.Services
                     {
                         var relacion = new MemberRols
                         {
-                            MemberId = usuario.Id,
+                            UserMemberId = usuario.Id,
                             RolId = rolExiste.Id
                         };
                         _unitOfWork.MemberRols.Add(relacion);
@@ -174,7 +173,7 @@ namespace ApiProject.Services
             return $"Credenciales incorrectas para el usuario {usuario.Username}.";
         }
 
-        private RefreshToken CreateRefreshToken(int memberId)
+        private RefreshToken CreateRefreshToken(int usermemberId)
         {
             var randomNumber = new byte[32];
             using (var generator = RandomNumberGenerator.Create())
@@ -182,7 +181,7 @@ namespace ApiProject.Services
                 generator.GetBytes(randomNumber);
                 return new RefreshToken
                 {
-                    MemberId = memberId,
+                    UserMemberId = usermemberId,
                     Token = Convert.ToBase64String(randomNumber),
                     Expires = DateTime.UtcNow.AddDays(10),
                     Created = DateTime.UtcNow
@@ -194,7 +193,7 @@ namespace ApiProject.Services
         {
             var datosUsuarioDto = new DataUserDto();
 
-            var usuario = await _unitOfWork.Members
+            var usuario = await _unitOfWork.UserMembers
                             .GetByRefreshTokenAsync(refreshToken);
 
             if (usuario == null)
@@ -217,7 +216,7 @@ namespace ApiProject.Services
             //generamos un nuevo Refresh Token y lo guardamos en la Base de Datos
             var newRefreshToken = CreateRefreshToken(usuario.Id);
             usuario.RefreshTokens.Add(newRefreshToken);
-            _unitOfWork.Members.Update(usuario);
+            _unitOfWork.UserMembers.Update(usuario);
             await _unitOfWork.SaveAsync();
             //Generamos un nuevo Json Web Token 😊
             datosUsuarioDto.EstaAutenticado = true;
@@ -232,7 +231,7 @@ namespace ApiProject.Services
             datosUsuarioDto.RefreshTokenExpiration = newRefreshToken.Expires;
             return datosUsuarioDto;
         }
-        private JwtSecurityToken CreateJwtToken(Member usuario)
+        private JwtSecurityToken CreateJwtToken(UserMember usuario)
         {
             var roles = usuario.MemberRols
                 .Select(mr => mr.Rol)

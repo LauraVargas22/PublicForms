@@ -22,7 +22,7 @@ namespace Infrastructure.Data
         public DbSet<Surveys> Surveys { get; set; }
         public DbSet<SumaryOptions> SumaryOptions { get; set; }
         public DbSet<SubQuestions> SubQuestions { get; set; }
-        public DbSet<Member> Members { get; set; }
+        public DbSet<UserMember> UserMembers { get; set; }
         public DbSet<Rol> Rols { get; set; }
         public DbSet<MemberRols> MemberRols { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }

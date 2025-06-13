@@ -13,12 +13,12 @@ namespace Infrastructure.Configuration
             builder.ToTable("refresh_tokens");
             builder.HasKey(e => e.Id); // Asumiendo que 'Id' es la clave primaria
 
-            builder.Property(e => e.MemberId)
+            builder.Property(e => e.UserMemberId)
                 .IsRequired();
 
-            builder.HasOne(e => e.Members)
+            builder.HasOne(e => e.UserMembers)
                 .WithMany(m => m.RefreshTokens)
-                .HasForeignKey(e => e.MemberId)
+                .HasForeignKey(e => e.UserMemberId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

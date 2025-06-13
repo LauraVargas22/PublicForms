@@ -9,6 +9,9 @@ using ApiProject.Helpers.Errors;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using AutoMapper.Execution;
+using Domain.Entities;
 
 namespace ApiProject.Extensions
 {
@@ -26,7 +29,9 @@ namespace ApiProject.Extensions
         public static void AddApplicationServices(this IServiceCollection services)
         {
             //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IPasswordHasher<UserMember>, PasswordHasher<UserMember>>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         }
 
         public static IServiceCollection AddCustomRateLimiter(this IServiceCollection services)

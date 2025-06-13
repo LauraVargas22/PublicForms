@@ -7,8 +7,8 @@ namespace Domain.Entities
 {
     public class MemberRols : BaseEntity
     {
-        public int MemberId { get; set; }
-        public Member Member { get; set; } = new Member(); 
+        public int UserMemberId { get; set; }
+        public UserMember UserMembers { get; set; } = new UserMember(); 
         public int RolId { get; set; } 
         public Rol Rol { get; set; } = new Rol();
     }

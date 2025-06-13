@@ -16,7 +16,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private ISubQuestionsRepository? _subQuestions;
     private ISumaryOptionsRepository? _sumaryOptions;
     private ISurveysRepository? _surveys;
-    private IMemberRepository? _member;
+    private IUserMemberRepository? _userMember;
     private IRolRepository? _rol;
     private IMemberRolsRepository? _memberRols;
 
@@ -133,15 +133,15 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
     }
 
-    public IMemberRepository Members
+    public IUserMemberRepository UserMembers
     {
         get
         {
-            if (_member == null)
+            if (_userMember == null)
             {
-                _member = new MemberRepository(_context);
+                _userMember = new UserMemberRepository(_context);
             }
-            return _member;
+            return _userMember;
         }
     }
     public IRolRepository Rols

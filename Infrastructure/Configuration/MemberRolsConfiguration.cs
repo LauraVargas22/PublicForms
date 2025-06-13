@@ -9,11 +9,11 @@ namespace Infrastructure.Configuration
         public void Configure(EntityTypeBuilder<MemberRols> builder)
         {
             builder.ToTable("MemberRols");
-            builder.HasKey(e => new { e.MemberId, e.RolId });
+            builder.HasKey(e => new { e.UserMemberId, e.RolId });
 
-            builder.HasOne(e => e.Member)
+            builder.HasOne(e => e.UserMembers)
                 .WithMany(e => e.MemberRols)
-                .HasForeignKey(e => e.MemberId);
+                .HasForeignKey(e => e.UserMemberId);
 
             builder.HasOne(e => e.Rol)
                 .WithMany(e => e.MemberRols)

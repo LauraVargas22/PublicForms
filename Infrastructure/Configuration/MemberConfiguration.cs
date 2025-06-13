@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configuration
 {
-    public class MemberConfiguration : IEntityTypeConfiguration<Member>
+    public class UserMemberConfiguration : IEntityTypeConfiguration<UserMember>
     {
-        public void Configure(EntityTypeBuilder<Member> builder)
+        public void Configure(EntityTypeBuilder<UserMember> builder)
         {
             // Aquí puedes configurar las propiedades de la entidad Marca
             // utilizando el objeto 'builder'.
@@ -24,8 +24,8 @@ namespace Infrastructure.Configuration
                     .HasMaxLength(200);
 
             builder.HasMany(p => p.RefreshTokens)
-                    .WithOne(p => p.Members)
-                    .HasForeignKey(p => p.MemberId)
+                    .WithOne(p => p.UserMembers)
+                    .HasForeignKey(p => p.UserMemberId)
                     .OnDelete(DeleteBehavior.Cascade);
         }
     }
